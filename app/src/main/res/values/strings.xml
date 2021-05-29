@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Sales Record</string>
+    <string name="back">back</string>
+    <string name="tambah_catatan">Tambah Catatan</string>
+    <string name="tanggal">Tanggal</string>
+    <string name="pendapatan">pendapatan</string>
+    <string name="simpan">SIMPAN</string>
+    <string name="pengeluaran">pengeluaran</string>
+    <string name="delete_data">Hapus Data</string>
+    <string name="icon_trash">icon trash</string>
+    <string name="icon_pencil">icon pencil</string>
+    <string name="edit_data">Ubah Data</string>
+    <string name="apakah_anda_yakin">Apakah anda yakin?</string>
+    <string name="saya_yakin">Saya yakin</string>
+    <string name="batal">Batal</string>
+    <string name="data_yang_telah_dihapus_tidak_akan_bisa_dikembalikan_kembali">Data yang telah dihapus tidak akan bisa dikembalikan kembali!</string>
+    <string name="catatan_keuangan">Catatan Keuangan</string>
+</resources>

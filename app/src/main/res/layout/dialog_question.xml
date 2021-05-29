@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.view.MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/layout_dialog"
+        android:padding="13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_icon"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/dialog_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/ic_warning" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/apakah_anda_yakin"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:textColor="#000"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/dialog_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="@string/data_yang_telah_dihapus_tidak_akan_bisa_dikembalikan_kembali"
+            android:textColor="#5C5B5B"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/dialog_title"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_title"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dialog_action_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:stateListAnimator="@null"
+            android:text="@string/saya_yakin"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:backgroundTint="#DC2626"
+            app:cornerRadius="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_description" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dialog_action_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginTop="20dp"
+
+            android:fontFamily="@font/montserrat_medium"
+            android:stateListAnimator="@null"
+            android:text="@string/batal"
+            android:textColor="#000"
+            android:textSize="12sp"
+
+            app:backgroundTint="@color/white"
+            app:cornerRadius="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/dialog_action_delete"
+            app:layout_constraintTop_toBottomOf="@+id/dialog_description"
+            app:strokeColor="#A8ACB6"
+            app:strokeWidth="0.5dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
