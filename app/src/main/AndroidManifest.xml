@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name=".ui.view.FormActivity"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName=".ui.view.MainActivity"/>
 
     </application>
 

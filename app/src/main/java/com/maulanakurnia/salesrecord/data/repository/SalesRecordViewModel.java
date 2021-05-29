@@ -16,7 +16,7 @@ import java.util.List;
  **/
 public class SalesRecordViewModel extends AndroidViewModel {
 
-    public static SalesRecordRepository repository;
+    public SalesRecordRepository repository;
     public final LiveData<List<SalesRecord>> listSalesRecord;
 
     public SalesRecordViewModel(@NonNull Application application) {
@@ -30,7 +30,7 @@ public class SalesRecordViewModel extends AndroidViewModel {
         return listSalesRecord;
     }
 
-    public static void insert(SalesRecord salesRecord) {
+    public void insert(SalesRecord salesRecord) {
         repository.insert(salesRecord);
     }
 
@@ -38,11 +38,11 @@ public class SalesRecordViewModel extends AndroidViewModel {
         return repository.get(id);
     }
 
-    public static void update(SalesRecord salesRecord) {
+    public void update(SalesRecord salesRecord) {
         repository.update(salesRecord);
     }
 
-    public static void delete(long id) {
+    public void delete(long id) {
         repository.delete(id);
     }
 }

@@ -34,6 +34,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, "salesrecord.db")
+                        .fallbackToDestructiveMigration()
                         .addCallback(sRoomDatabaseCallback)
                         .build();
             }

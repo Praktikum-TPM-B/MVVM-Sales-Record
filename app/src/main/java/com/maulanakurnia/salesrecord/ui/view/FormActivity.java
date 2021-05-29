@@ -1,15 +1,18 @@
 package com.maulanakurnia.salesrecord.ui.view;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -29,6 +32,12 @@ import java.util.Locale;
  * Keep Coding & Stay Awesome!
  **/
 public class FormActivity extends AppCompatActivity {
+
+    public static final String EXTRA_ID             = "EXTRA_ID";
+    public static final String EXTRA_DATE           = "EXTRA_DATE";
+    public static final String EXTRA_GROSS_PROVIT   = "EXTRA_GROSS_PROVIT";
+    public static final String EXTRA_EXPENDITURE    = "EXTRA_EXPENDITURE";
+    public static final String EXTRA_NET_GROSS      = "EXTRA_NET_GROSS";
 
     private int salesRecordID    = 0;
     private boolean isEdit       = false;
@@ -68,24 +77,23 @@ public class FormActivity extends AppCompatActivity {
         }
 
         dateInput.setOnClickListener(v -> {
+            if(datePicker.isAdded()) {
+                datePicker.dismiss();
+            }
             datePicker.show(getSupportFragmentManager(), datePicker.getTag());
         });
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            dateInput.setText(dateFormat.format(datePicker.getSelection()));
-        });
+
+        datePicker.addOnPositiveButtonClickListener(selection -> dateInput.setText(dateFormat.format(datePicker.getSelection())));
 
         grossprovitInput.addTextChangedListener(new Currency(grossprovitInput));
         expenditureInput.addTextChangedListener(new Currency(expenditureInput));
 
-        if(getIntent().hasExtra(MainActivity.SALES_RECORD_ID)) {
-            salesRecordID = getIntent().getIntExtra(MainActivity.SALES_RECORD_ID,0);
+        if(getIntent().hasExtra(EXTRA_ID)) {
+            salesRecordID = getIntent().getIntExtra(EXTRA_ID,-1);
 
             salesRecordViewModel.get(salesRecordID).observe(this, salesRecord -> {
                 if(salesRecord != null) {
-                    datePicker = MaterialDatePicker.Builder.datePicker()
-                            .setTitleText("Pilih Tanggal")
-                            .setCalendarConstraints(new CalendarConstraints.Builder().setOpenAt(salesRecord.getDate().getTime()).build())
-                            .setSelection(DateTypeConverter.fromDate(salesRecord.getDate())).build();
+
                     datePicker.show(getSupportFragmentManager(), datePicker.getTag());
                     datePicker.dismiss();
                     dateInput.setText(dateFormat.format(salesRecord.getDate()));
@@ -100,37 +108,25 @@ public class FormActivity extends AppCompatActivity {
         }
 
         submit.setOnClickListener(v -> {
-            int id                  = salesRecordID;
             String grossProfit      = grossprovitInput.getText().toString();
             String expenditure      = expenditureInput.getText().toString();
             String netGross         = String.valueOf(Double.parseDouble(Currency.trimComma(grossProfit)) - Double.parseDouble(Currency.trimComma(expenditure)));
-            SalesRecord salesRecord = new SalesRecord();
-            if(!isEdit) {
-                try {
-                    salesRecord.setDate(DateTypeConverter.toDate(datePicker.getSelection()));
-                    salesRecord.setExpenditure(Double.parseDouble(Currency.trimComma(expenditure)));
-                    salesRecord.setGross_profit(Double.parseDouble(Currency.trimComma(grossProfit)));
-                    salesRecord.setNet_gross(Double.parseDouble(Currency.trimComma(netGross)));
-                    SalesRecordViewModel.insert(salesRecord);
-                    finish();
-                }catch (Exception err) {
-                    Log.i("EXCEPTION", "ERROR: "+ err);
-                }
+
+            Intent data = new Intent();
+            data.putExtra(EXTRA_DATE, datePicker.getSelection());
+            data.putExtra(EXTRA_GROSS_PROVIT, Double.parseDouble(Currency.trimComma(grossProfit)));
+            data.putExtra(EXTRA_EXPENDITURE, Double.parseDouble(Currency.trimComma(expenditure)));
+            data.putExtra(EXTRA_NET_GROSS, Double.parseDouble(Currency.trimComma(netGross)));
+
+            salesRecordID = getIntent().getIntExtra(EXTRA_ID, -1);
+            if (salesRecordID != -1) {
+                data.putExtra(EXTRA_ID, salesRecordID);
+                setResult(MainActivity.EDIT_SALES_RECORD_REQUEST, data);
+            }else {
+                setResult(MainActivity.ADD_SALES_RECORD_REQUEST, data);
             }
-            else {
-                try{
-                    salesRecord.setId(id);
-                    salesRecord.setDate(DateTypeConverter.toDate((Long) datePicker.getSelection()));
-                    salesRecord.setGross_profit(Double.parseDouble(Currency.trimComma(grossProfit)));
-                    salesRecord.setExpenditure(Double.parseDouble(Currency.trimComma(expenditure)));
-                    salesRecord.setNet_gross(Double.parseDouble(netGross));
-                    SalesRecordViewModel.update(salesRecord);
-                    isEdit = false;
-                    finish();
-                }catch (NullPointerException err) {
-                    Log.i("EXCETION", "ERRR: "+err);
-                }
-            }
+            finish();
+
         });
 
         back.setOnClickListener(v->finish());

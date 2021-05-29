@@ -36,11 +36,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_sales_record"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/llViewTitle"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
         android:nestedScrollingEnabled="false"
-        app:layout_constraintTop_toBottomOf="@+id/llViewTitle"
+        app:layout_constraintTop_toBottomOf="@id/llViewTitle"
         tools:listitem="@layout/list_item" />
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fb_add"
@@ -53,6 +55,7 @@
         android:src="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        android:contentDescription="@string/floating_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

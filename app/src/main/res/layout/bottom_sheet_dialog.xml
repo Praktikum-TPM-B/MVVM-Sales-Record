@@ -27,8 +27,9 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:text="@string/edit_data"
-                            android:textColor="#000"
-                            android:textSize="16sp" />
+                            android:textColor="#0b67ff"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/montserrat_medium"/>
                 </LinearLayout>
                 <View
                     android:layout_width="match_parent"
@@ -53,7 +54,8 @@
                             android:layout_gravity="center_vertical"
                             android:text="@string/delete_data"
                             android:textColor="#CD1D1D"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:fontFamily="@font/montserrat_medium"/>
                 </LinearLayout>
         </LinearLayout>
 
@@ -78,7 +80,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="Batal"
                     android:textColor="#000"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:fontFamily="@font/montserrat_semi_bold"/>
         </LinearLayout>
 
 

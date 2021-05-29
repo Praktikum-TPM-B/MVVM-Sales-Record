@@ -1,130 +1,69 @@
 package com.maulanakurnia.salesrecord.ui.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.maulanakurnia.salesrecord.R;
 import com.maulanakurnia.salesrecord.data.model.SalesRecord;
-import com.maulanakurnia.salesrecord.data.repository.SalesRecordViewModel;
-import com.maulanakurnia.salesrecord.ui.view.FormActivity;
-import com.maulanakurnia.salesrecord.ui.view.MainActivity;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Maulana Kurnia on 5/27/2021
  * Keep Coding & Stay Awesome!
  **/
-public class SalesRecordAdapter extends RecyclerView.Adapter<SalesRecordAdapter.ViewHolder> {
+public class SalesRecordAdapter extends ListAdapter<SalesRecord, SalesRecordAdapter.ViewHolder> {
 
-    private final List<SalesRecord> salesRecords;
-    private final Context context;
-    private LinearLayout change, delete, cancel;
+    private AdapterImpl.OnItemClickListener clickListener;
+    private AdapterImpl.OnItemLongClickListener longClickListener;
 
-    public SalesRecordAdapter(List<SalesRecord> salesRecords, Context context) {
-        this.salesRecords = salesRecords;
-        this.context = context;
+    private static final DiffUtil.ItemCallback<SalesRecord> DIFF_CALLBACK = new DiffUtil.ItemCallback<SalesRecord>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull SalesRecord oldItem, @NonNull SalesRecord newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull SalesRecord oldItem, @NonNull SalesRecord newItem) {
+            return oldItem.getDate().equals(newItem.getDate()) &&
+                    oldItem.getGross_profit().equals(newItem.getGross_profit()) &&
+                    oldItem.getExpenditure().equals(newItem.getExpenditure()) &&
+                    oldItem.getNet_gross().equals(newItem.getNet_gross());
+        }
+    };
+
+    public SalesRecordAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     @NonNull @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false));
+        View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.list_item, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @SuppressLint({"SetTextI18n","InflateParams"}) @Override
     public void onBindViewHolder(@NonNull SalesRecordAdapter.ViewHolder holder, int position) {
-        AtomicBoolean isPressed                 = new AtomicBoolean(false);
+        SalesRecord salesRecord                 = getItem(position);
+
         SimpleDateFormat dayFormat              = new SimpleDateFormat("EEEE", new Locale("id","ID"));
         SimpleDateFormat dateFormat             = new SimpleDateFormat("dd MMMM yyyy", new Locale("id","ID"));
-        BottomSheetDialog bottomSheet           = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
-        View view                               = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog,null);
-        MaterialAlertDialogBuilder builder      = new MaterialAlertDialogBuilder(context, R.layout.dialog_question);
-        SalesRecord salesRecord                 = salesRecords.get(position);
-
-        holder.cardView.setOnClickListener(v -> {
-            ConstraintLayout salesDetail = v.findViewById(R.id.card_detail);
-            if(!isPressed.get()){
-                salesDetail.setVisibility(View.VISIBLE);
-                isPressed.set(true);
-            } else {
-                salesDetail.setVisibility(View.GONE);
-                isPressed.set(false);
-            }
-        });
-
-        holder.cardView.setOnLongClickListener(v2 -> {
-            change = view.findViewById(R.id.llChange);
-            delete = view.findViewById(R.id.llDelete);
-            cancel = view.findViewById(R.id.llCancel);
-
-            change.setOnClickListener(v21 -> {
-                Intent intent = new Intent(context, FormActivity.class);
-                intent.putExtra(MainActivity.SALES_RECORD_ID, salesRecord.getId());
-                bottomSheet.dismiss();
-                context.startActivity(intent);
-            });
-
-            delete.setOnClickListener(v22 -> {
-                bottomSheet.dismiss();
-
-                View dialog             = LayoutInflater.from(context).inflate(R.layout.dialog_question, view.findViewById(R.id.layout_dialog));
-                builder.setView(dialog);
-                AlertDialog alertDialog = builder.create();
-
-                dialog.findViewById(R.id.dialog_action_cancel).setOnClickListener(v3 -> {
-                    alertDialog.dismiss();
-                    bottomSheet.show();
-                });
-
-                dialog.findViewById(R.id.dialog_action_delete).setOnClickListener(v4 -> {
-                    SalesRecordViewModel.delete(salesRecord.getId());
-                    alertDialog.dismiss();
-                    bottomSheet.dismiss();
-                    Toast.makeText(context, "Berhasil menghapus catatan "+dateFormat.format(salesRecord.getDate()), Toast.LENGTH_SHORT).show();
-                });
-
-                if(alertDialog.getWindow() != null) { alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0)); }
-
-                alertDialog.show();
-            });
-
-            cancel.setOnClickListener(v23 -> {
-                bottomSheet.dismiss();
-            });
-
-            bottomSheet.setContentView(view);
-            bottomSheet.show();
-            return true;
-        });
-
+        
         holder.day.setText(dayFormat.format(salesRecord.getDate()));
 
         DecimalFormat indonesianExchangeRate = (DecimalFormat)
@@ -150,14 +89,11 @@ public class SalesRecordAdapter extends RecyclerView.Adapter<SalesRecordAdapter.
             holder.net_gross.setTextColor(Color.parseColor("#313131"));
             holder.ic_net_gross.setVisibility(View.GONE);
         }
+
     }
 
-    @Override
-    public int getItemCount() {
-        return salesRecords.size();
-    }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         public TextView day, date, gross_provit, expenditure, net_gross;
         public CardView cardView;
         public ImageView ic_net_gross;
@@ -171,6 +107,30 @@ public class SalesRecordAdapter extends RecyclerView.Adapter<SalesRecordAdapter.
             net_gross       = itemView.findViewById(R.id.txt_net_gross);
             cardView        = itemView.findViewById(R.id.card_sales_record);
             ic_net_gross    = itemView.findViewById(R.id.icon_net_gross);
+
+            cardView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (clickListener != null && position != RecyclerView.NO_POSITION) {
+                    clickListener.onItemClick(cardView);
+                }
+            });
+
+            cardView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (longClickListener != null && position != RecyclerView.NO_POSITION) {
+                    longClickListener.onItemClick(getItem(position));
+                }
+                return true;
+            });
         }
     }
+
+    public void setOnItemClickListener(AdapterImpl.OnItemClickListener l) {
+        this.clickListener = l;
+    }
+
+    public void setOnItemLongClickListener(AdapterImpl.OnItemLongClickListener l) {
+        this.longClickListener = l;
+    }
+
 }
