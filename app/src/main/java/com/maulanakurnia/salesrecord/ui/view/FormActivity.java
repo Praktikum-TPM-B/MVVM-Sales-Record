@@ -2,8 +2,6 @@ package com.maulanakurnia.salesrecord.ui.view;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,8 +17,8 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.maulanakurnia.salesrecord.R;
 import com.maulanakurnia.salesrecord.data.model.SalesRecord;
 import com.maulanakurnia.salesrecord.data.repository.SalesRecordViewModel;
-import com.maulanakurnia.salesrecord.utils.DateTypeConverter;
 import com.maulanakurnia.salesrecord.utils.Currency;
+import com.maulanakurnia.salesrecord.utils.DateTypeConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,6 +46,7 @@ public class FormActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
+
         dateInput               = findViewById(R.id.et_date);
         grossprovitInput        = findViewById(R.id.et_gross_provit);
         expenditureInput        = findViewById(R.id.et_expenditure);
@@ -56,13 +55,11 @@ public class FormActivity extends AppCompatActivity {
         back                    = findViewById(R.id.back);
         salesRecordViewModel    = new ViewModelProvider.AndroidViewModelFactory(FormActivity.this.getApplication()).create(SalesRecordViewModel.class);
         dateFormat              = new SimpleDateFormat("dd MMMM yyyy", new Locale("id","ID"));
-
-
-        datePicker = MaterialDatePicker.Builder.datePicker()
-                    .setTitleText("Pilih Tanggal")
-                    .setCalendarConstraints(new CalendarConstraints.Builder().setOpenAt(Calendar.getInstance().getTime().getTime()).build())
-                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                    .build();
+        datePicker              = MaterialDatePicker.Builder.datePicker()
+                                  .setTitleText("Pilih Tanggal")
+                                  .setCalendarConstraints(new CalendarConstraints.Builder().setOpenAt(Calendar.getInstance().getTime().getTime()).build())
+                                  .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                                  .build();
 
         if(!isEdit) {
             datePicker.show(getSupportFragmentManager(), datePicker.getTag());
@@ -77,31 +74,8 @@ public class FormActivity extends AppCompatActivity {
             dateInput.setText(dateFormat.format(datePicker.getSelection()));
         });
 
-        grossprovitInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Currency.input(grossprovitInput, this);
-            }
-        });
-
-        expenditureInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Currency.input(expenditureInput, this);
-            }
-        });
+        grossprovitInput.addTextChangedListener(new Currency(grossprovitInput));
+        expenditureInput.addTextChangedListener(new Currency(expenditureInput));
 
         if(getIntent().hasExtra(MainActivity.SALES_RECORD_ID)) {
             salesRecordID = getIntent().getIntExtra(MainActivity.SALES_RECORD_ID,0);

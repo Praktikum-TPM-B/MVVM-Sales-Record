@@ -1,5 +1,6 @@
 package com.maulanakurnia.salesrecord.utils;
 
+import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
@@ -9,7 +10,13 @@ import java.util.StringTokenizer;
  * Created by Maulana Kurnia on 5/29/2021
  * Keep Coding & Stay Awesome!
  **/
-public class Currency {
+public class Currency implements android.text.TextWatcher {
+
+    private EditText editText;
+
+    public Currency(EditText editText) {
+        this.editText = editText;
+    }
 
     public static void input(EditText editText, TextWatcher watcher) {
         try {
@@ -71,4 +78,20 @@ public class Currency {
             return string;
         }
     }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        Currency.input(this.editText, this);
+    }
 }
+
