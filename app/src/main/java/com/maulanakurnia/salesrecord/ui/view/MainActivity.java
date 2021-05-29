@@ -56,9 +56,4 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
-    public void reload() {
-        finish();
-        startActivity(getIntent());
-    }
 }
