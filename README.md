@@ -18,7 +18,7 @@ Maulana Kurnia Fiqih Ainul Yaqin
 
 - Add Sales Record
 
-![add](assests/add.jpeg)
+![add](assets/add.jpeg)
 
 - Bottom Sheet
 
