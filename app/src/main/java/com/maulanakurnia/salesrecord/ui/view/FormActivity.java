@@ -94,6 +94,11 @@ public class FormActivity extends AppCompatActivity {
             salesRecordViewModel.get(salesRecordID).observe(this, salesRecord -> {
                 if(salesRecord != null) {
 
+                    datePicker = MaterialDatePicker.Builder.datePicker()
+                            .setTitleText("Pilih Tanggal")
+                            .setCalendarConstraints(new CalendarConstraints.Builder().setOpenAt(salesRecord.getDate().getTime()).build())
+                            .setSelection(DateTypeConverter.fromDate(salesRecord.getDate())).build();
+
                     datePicker.show(getSupportFragmentManager(), datePicker.getTag());
                     datePicker.dismiss();
                     dateInput.setText(dateFormat.format(salesRecord.getDate()));
