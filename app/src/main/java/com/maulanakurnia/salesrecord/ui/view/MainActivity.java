@@ -138,14 +138,15 @@ public class MainActivity extends AppCompatActivity {
         activityLauncher.launch(intent, result -> {
             int getResult = result.getResultCode();
 
-            if(getResult == ADD_SALES_RECORD_REQUEST) {
-                assert result.getData() != null;
-                Long date           = result.getData().getLongExtra(FormActivity.EXTRA_DATE, 0);
-                Double gross_provit = result.getData().getDoubleExtra(FormActivity.EXTRA_GROSS_PROVIT, 0);
-                Double expenditure  = result.getData().getDoubleExtra(FormActivity.EXTRA_EXPENDITURE, 0);
-                Double net_gross    = result.getData().getDoubleExtra(FormActivity.EXTRA_NET_GROSS,0);
+            assert result.getData() != null;
+            Long date           = result.getData().getLongExtra(FormActivity.EXTRA_DATE, 0);
+            Double gross_provit = result.getData().getDoubleExtra(FormActivity.EXTRA_GROSS_PROVIT, 0);
+            Double expenditure  = result.getData().getDoubleExtra(FormActivity.EXTRA_EXPENDITURE, 0);
+            Double net_gross    = result.getData().getDoubleExtra(FormActivity.EXTRA_NET_GROSS,0);
+            SalesRecord salesRecord = new SalesRecord();
 
-                SalesRecord salesRecord = new SalesRecord();
+            if(getResult == ADD_SALES_RECORD_REQUEST) {
+
                 salesRecord.setDate(DateTypeConverter.toDate(date));
                 salesRecord.setGross_profit(gross_provit);
                 salesRecord.setExpenditure(expenditure);
@@ -154,19 +155,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Data berhasil disimpan!",Toast.LENGTH_SHORT).show();
 
             } else if(getResult == EDIT_SALES_RECORD_REQUEST) {
-                assert result.getData() != null;
                 int id = result.getData().getIntExtra(FormActivity.EXTRA_ID, -1);
                 if(id == -1) {
                     Toast.makeText(MainActivity.this, "Data tidak dapat diperbaharui", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                Long date           = result.getData().getLongExtra(FormActivity.EXTRA_DATE, 0);
-                Double gross_provit = result.getData().getDoubleExtra(FormActivity.EXTRA_GROSS_PROVIT, 0);
-                Double expenditure  = result.getData().getDoubleExtra(FormActivity.EXTRA_EXPENDITURE, 0);
-                Double net_gross    = result.getData().getDoubleExtra(FormActivity.EXTRA_NET_GROSS,0);
-
-                SalesRecord salesRecord = new SalesRecord();
                 salesRecord.setId(id);
                 salesRecord.setDate(DateTypeConverter.toDate(date));
                 salesRecord.setGross_profit(gross_provit);
