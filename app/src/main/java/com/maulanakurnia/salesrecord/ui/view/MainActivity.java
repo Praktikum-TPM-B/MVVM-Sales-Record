@@ -1,5 +1,6 @@
 package com.maulanakurnia.salesrecord.ui.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -8,7 +9,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +27,6 @@ import com.maulanakurnia.salesrecord.R;
 import com.maulanakurnia.salesrecord.data.model.SalesRecord;
 import com.maulanakurnia.salesrecord.data.repository.SalesRecordViewModel;
 import com.maulanakurnia.salesrecord.ui.adapter.SalesRecordAdapter;
-import com.maulanakurnia.salesrecord.utils.BetterActivityResult;
 import com.maulanakurnia.salesrecord.utils.DateTypeConverter;
 
 import java.text.SimpleDateFormat;
@@ -51,12 +53,58 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout change, delete, cancel;
     private SalesRecordViewModel salesRecordViewModel;
 
-    protected final BetterActivityResult<Intent, ActivityResult> activityLauncher = BetterActivityResult.registerActivityForResult(this);
-
+    @SuppressLint("InflateParams")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActivityResultLauncher<Intent> formActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Intent data = result.getData();
+                int getResult = result.getResultCode();
+
+                if(getResult == ADD_SALES_RECORD_REQUEST || getResult == EDIT_SALES_RECORD_REQUEST) {
+
+                    assert result.getData() != null;
+                    Long date           = data.getLongExtra(FormActivity.EXTRA_DATE, 0);
+                    Double gross_provit = data.getDoubleExtra(FormActivity.EXTRA_GROSS_PROVIT, 0);
+                    Double expenditure  = data.getDoubleExtra(FormActivity.EXTRA_EXPENDITURE, 0);
+                    Double net_gross    = data.getDoubleExtra(FormActivity.EXTRA_NET_GROSS,0);
+                    SalesRecord salesRecord = new SalesRecord();
+
+                    if(getResult == ADD_SALES_RECORD_REQUEST) {
+
+                        salesRecord.setDate(DateTypeConverter.toDate(date));
+                        salesRecord.setGross_profit(gross_provit);
+                        salesRecord.setExpenditure(expenditure);
+                        salesRecord.setNet_gross(net_gross);
+                        salesRecordViewModel.insert(salesRecord);
+                        Toast.makeText(MainActivity.this, "Data berhasil disimpan!",Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        int id = result.getData().getIntExtra(FormActivity.EXTRA_ID, -1);
+                        if(id == -1) {
+                            Toast.makeText(MainActivity.this, "Data tidak dapat diperbaharui", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        salesRecord.setId(id);
+                        salesRecord.setDate(DateTypeConverter.toDate(date));
+                        salesRecord.setGross_profit(gross_provit);
+                        salesRecord.setExpenditure(expenditure);
+                        salesRecord.setNet_gross(net_gross);
+                        salesRecordViewModel.update(salesRecord);
+                        Toast.makeText(MainActivity.this, "Data berhasil diperbaharui",Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "Aksi Dibatalkan", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+
         RecyclerView recyclerView = findViewById(R.id.rv_sales_record);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -76,10 +124,17 @@ public class MainActivity extends AppCompatActivity {
 
         addRecord.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormActivity.class);
-            openSomeActivityForResult(intent);
+            formActivityResultLauncher.launch(intent);
         });
 
-        salesRecordAdapter.setOnItemClickListener(v -> {
+
+        showSalesDetail(salesRecordAdapter);
+        openBottomSheet(salesRecordAdapter, formActivityResultLauncher);
+
+    }
+
+    public void showSalesDetail(@NonNull SalesRecordAdapter adapter) {
+        adapter.setOnItemClickListener(v -> {
             ConstraintLayout salesDetail = v.findViewById(R.id.card_detail);
             if(!isPressed.get()){
                 salesDetail.setVisibility(VISIBLE);
@@ -89,8 +144,10 @@ public class MainActivity extends AppCompatActivity {
                 isPressed.set(false);
             }
         });
+    }
 
-        salesRecordAdapter.setOnItemLongClickListener(salesRecord -> {
+    public void openBottomSheet(@NonNull SalesRecordAdapter adapter, ActivityResultLauncher<Intent> launcher) {
+        adapter.setOnItemLongClickListener(salesRecord -> {
             change = bsView.findViewById(R.id.llChange);
             delete = bsView.findViewById(R.id.llDelete);
             cancel = bsView.findViewById(R.id.llCancel);
@@ -98,8 +155,8 @@ public class MainActivity extends AppCompatActivity {
             change.setOnClickListener(v21 -> {
                 Intent intent = new Intent(this, FormActivity.class);
                 intent.putExtra(FormActivity.EXTRA_ID, salesRecord.getId());
+                launcher.launch(intent);
                 bottomSheet.dismiss();
-                openSomeActivityForResult(intent);
             });
 
             delete.setOnClickListener(v22 -> {
@@ -125,54 +182,10 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
             });
 
-            cancel.setOnClickListener(v23 -> {
-                bottomSheet.dismiss();
-            });
+            cancel.setOnClickListener(v -> bottomSheet.dismiss());
 
             bottomSheet.setContentView(bsView);
             bottomSheet.show();
-        });
-    }
-
-    public void openSomeActivityForResult(Intent intent) {
-        activityLauncher.launch(intent, result -> {
-            int getResult = result.getResultCode();
-
-            if(getResult == ADD_SALES_RECORD_REQUEST || getResult == EDIT_SALES_RECORD_REQUEST) {
-                assert result.getData() != null;
-                Long date           = result.getData().getLongExtra(FormActivity.EXTRA_DATE, 0);
-                Double gross_provit = result.getData().getDoubleExtra(FormActivity.EXTRA_GROSS_PROVIT, 0);
-                Double expenditure  = result.getData().getDoubleExtra(FormActivity.EXTRA_EXPENDITURE, 0);
-                Double net_gross    = result.getData().getDoubleExtra(FormActivity.EXTRA_NET_GROSS,0);
-                SalesRecord salesRecord = new SalesRecord();
-                if(getResult == ADD_SALES_RECORD_REQUEST) {
-
-                    salesRecord.setDate(DateTypeConverter.toDate(date));
-                    salesRecord.setGross_profit(gross_provit);
-                    salesRecord.setExpenditure(expenditure);
-                    salesRecord.setNet_gross(net_gross);
-                    salesRecordViewModel.insert(salesRecord);
-                    Toast.makeText(MainActivity.this, "Data berhasil disimpan!",Toast.LENGTH_SHORT).show();
-
-                } else {
-                    int id = result.getData().getIntExtra(FormActivity.EXTRA_ID, -1);
-                    if(id == -1) {
-                        Toast.makeText(MainActivity.this, "Data tidak dapat diperbaharui", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    salesRecord.setId(id);
-                    salesRecord.setDate(DateTypeConverter.toDate(date));
-                    salesRecord.setGross_profit(gross_provit);
-                    salesRecord.setExpenditure(expenditure);
-                    salesRecord.setNet_gross(net_gross);
-                    salesRecordViewModel.update(salesRecord);
-                    Toast.makeText(MainActivity.this, "Data berhasil diperbaharui",Toast.LENGTH_SHORT).show();
-                }
-            }
-             else {
-                Toast.makeText(MainActivity.this, "Aksi Dibatalkan", Toast.LENGTH_SHORT).show();
-            }
         });
     }
 }

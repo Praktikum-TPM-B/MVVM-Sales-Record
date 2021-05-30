@@ -5,9 +5,8 @@ import androidx.room.TypeConverter;
 import java.util.Date;
 
 /**
- * Created by Maulana Kurnia on 5/26/2021
- * Keep Coding & Stay Awesome!
- **/
+ * source : https://developer.android.com/training/data-storage/room/referencing-data#type-converters
+ */
 public class DateTypeConverter {
 
     @TypeConverter
