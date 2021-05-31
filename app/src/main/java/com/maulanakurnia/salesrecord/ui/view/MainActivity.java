@@ -136,11 +136,14 @@ public class MainActivity extends AppCompatActivity {
     public void showSalesDetail(@NonNull SalesRecordAdapter adapter) {
         adapter.setOnItemClickListener(v -> {
             ConstraintLayout salesDetail = v.findViewById(R.id.card_detail);
+            View divider                 = v.findViewById(R.id.divider);
             if(!isPressed.get()){
                 salesDetail.setVisibility(VISIBLE);
+                divider.setVisibility(VISIBLE);
                 isPressed.set(true);
             } else {
                 salesDetail.setVisibility(GONE);
+                divider.setVisibility(GONE);
                 isPressed.set(false);
             }
         });

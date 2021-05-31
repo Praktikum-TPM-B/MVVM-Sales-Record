@@ -16,5 +16,4 @@ public interface AdapterImpl {
     interface OnItemClickListener {
         void onItemClick(View view);
     }
-
 }
