@@ -82,13 +82,13 @@ public class SalesRecordAdapter extends ListAdapter<SalesRecord, SalesRecordAdap
         if(salesRecord.getNet_gross() < 0) {
             holder.net_gross.setTextColor(Color.parseColor("#C5221F"));
             holder.container_logo.setCardBackgroundColor(Color.parseColor("#FCE8E6"));
-            holder.logo_info.setImageResource(R.drawable.ic_baseline_arrow_upward);
+            holder.logo_info.setImageResource(R.drawable.ic_baseline_arrow_downward);
             holder.logo_info.setColorFilter(Color.parseColor("#C5221F"));
 
         }else if(salesRecord.getNet_gross() > 0){
             holder.net_gross.setTextColor(Color.parseColor("#098C0A"));
             holder.container_logo.setCardBackgroundColor(Color.parseColor("#E6F4EA"));
-            holder.logo_info.setImageResource(R.drawable.ic_baseline_arrow_downward);
+            holder.logo_info.setImageResource(R.drawable.ic_baseline_arrow_upward);
             holder.logo_info.setColorFilter(Color.parseColor("#098C0A"));
         } else {
             holder.net_gross.setTextColor(Color.parseColor("#0080FF"));
